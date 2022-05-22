@@ -37,6 +37,7 @@ public class PlayerControl : MonoBehaviour {
     private void Update() {
         if(Input.GetButton("Jump") && Time.time > nextFire){
             nextFire = Time.time + fireRate;
+            print(gameObject.name + "trying to shoot");
             if(characterSelection.getIndex() == 1){
                 Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
                 Instantiate(shot, shotSpawn2.position, shotSpawn2.rotation);

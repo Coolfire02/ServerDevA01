@@ -18,11 +18,18 @@ public class GameController : MonoBehaviour {
     public Text gameOverText;
     public Text restartText;
     public Text mainMenuText;
+    public Text coinsText;
 
+    private int coinsCollected;
+
+    private bool gameJustEnded;
     private bool restart;
     private bool gameOver;
     private int score;
     private List<GameObject> asteroids;
+
+    [SerializeField]
+    GameObject playFabUtils;
 
     private void Start() {
         asteroids = new List<GameObject> {
@@ -33,9 +40,13 @@ public class GameController : MonoBehaviour {
         gameOverText.text = "";
         restartText.text = "";
         mainMenuText.text = "";
+        coinsText.text = "0 Coins";
+        scoreText.text = "Score 0";
         restart = false;
         gameOver = false;
+        gameJustEnded = true;
         score = 0;
+        coinsCollected = 0;
         StartCoroutine(spawnWaves());
         updateScore();
     }
@@ -52,6 +63,14 @@ public class GameController : MonoBehaviour {
         if (gameOver) {
             restartText.text = "Press R to restart game";
             mainMenuText.text = "Press Q to go back to main menu";
+            if(gameJustEnded)
+            {
+                playFabUtils.GetComponent<PlayFabUserUtils>().updateHighscore(score);
+                playFabUtils.GetComponent<PlayFabUserUtils>().addXP((int)(score * 0.5f));
+                playFabUtils.GetComponent<PlayFabUserUtils>().addCoins(coinsCollected);
+                gameJustEnded = false;
+            }
+
             restart = true;
         }
     }
@@ -81,6 +100,12 @@ public class GameController : MonoBehaviour {
     public void addScore(int score){
         this.score += score;
         updateScore();
+    }
+
+    public void addCoins(int coins)
+    {
+        this.coinsCollected += coins;
+        coinsText.text = this.coinsCollected + " Coins";
     }
 
     void updateScore(){

@@ -9,6 +9,9 @@ public class CharacterSelection : MonoBehaviour {
     int index;
 
     void Start() {
+        print("Screen height: " + Screen.height);
+        print("Screen width: " + Screen.width);
+        transform.position = new Vector3(-Screen.height, -Screen.width * 0.2f, -3);
         index = PlayerPrefs.GetInt("SelectedCharacter");
         characters = new GameObject[transform.childCount];
         Debug.Log(transform.childCount);

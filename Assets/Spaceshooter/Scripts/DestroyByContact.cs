@@ -21,7 +21,7 @@ public class DestroyByContact : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        if(other.tag != "Collectable")
+        if(gameObject.tag != "Collectable" && other.gameObject.tag != "Collectable")
         {
             if (other.tag != "Boundary")
             {
@@ -36,6 +36,15 @@ public class DestroyByContact : MonoBehaviour {
                 gameController.addScore(scoreValue);
                 Destroy(other.gameObject);
                 Destroy(gameObject);
+            }
+        }else
+        {
+            print("Collision with coin with GO Tag" + other.gameObject.tag);
+            if(other.gameObject.tag == "Player")
+            {
+                gameObject.GetComponent<AudioSource>().Play();
+                Destroy(gameObject);
+                gameController.addCoins(1);
             }
         }
     }

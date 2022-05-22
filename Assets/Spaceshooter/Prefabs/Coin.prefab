@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 817405932515179945}
   - component: {fileID: 6849751038623628936}
   - component: {fileID: 8793164060531806851}
-  - component: {fileID: 5886606306663721983}
+  - component: {fileID: -7765330511232735116}
   m_Layer: 0
   m_Name: Coin
   m_TagString: Collectable
@@ -158,7 +158,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 4300002, guid: 5282f20eba4d44213820e21af8481932, type: 3}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!82 &8793164060531806851
 AudioSource:
   m_ObjectHideFlags: 0
@@ -169,7 +169,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: bf75b984df8a84987bcf3a8bf6e2862d, type: 3}
+  m_audioClip: {fileID: 8300000, guid: dc905fdba3e39f1479218b09d67857f7, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
@@ -179,7 +179,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 0.94455564
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -255,7 +255,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &5886606306663721983
+--- !u!114 &-7765330511232735116
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -264,17 +264,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8964703738019908957}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e556055501c944571a115bf6dac886af, type: 3}
+  m_Script: {fileID: 11500000, guid: c5ebf250aeced4c43a491713111dd2ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  tiltMultiplier: 5
-  boundary:
-    xMin: -6
-    xMax: 6
-    zMin: -4
-    zMax: 8
-  shot: {fileID: 1154657490353330, guid: 280b9049aa35e4c4fb2c46ac4c4ce6b5, type: 3}
-  shotSpawn: {fileID: 0}
-  shotSpawn2: {fileID: 0}
-  fireRate: 0.25
+  explosion: {fileID: 0}
+  playerExplosion: {fileID: 0}
+  coin: {fileID: 0}
+  scoreValue: 0

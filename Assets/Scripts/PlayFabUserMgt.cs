@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 using PlayFab;
 using PlayFab.ClientModels;
 
+using System;
+
 
 using TMPro;
 
@@ -67,7 +69,10 @@ public class PlayFabUserMgt : MonoBehaviour
             CustomId = SystemInfo.deviceUniqueIdentifier,
         };
         PlayFabClientAPI.LoginWithCustomID(guestLoginRequest, OnLoginSuccess, OnError);
+        //print(Guid.NewGuid().ToString("N").Substring(0,12));
+
     }
+
 
     public void OnButtonLoginEmail()
     {
@@ -118,6 +123,8 @@ public class PlayFabUserMgt : MonoBehaviour
     {
         UpdateMsg("Login Success");
         MenuManager.Instance.OpenMenu("StartScreen");
+        MenuManager.Instance.getMenu("StartScreen").gameObject.GetComponentInChildren<LobbyStats>()?.refreshStatistics();
+
         //SceneManager.LoadScene("InventoryScene");
     }
 

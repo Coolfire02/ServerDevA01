@@ -51,6 +51,7 @@ public class PlayFabUserUtils : MonoBehaviour
                 data.Add("Lvl", lvl.ToString());
                 print("new lvl " + lvl + " new xp " + xp);
                 updateUserData(data);
+                updateLeaderboard("Playerlevel", lvl);
             },
             OnError);
     }

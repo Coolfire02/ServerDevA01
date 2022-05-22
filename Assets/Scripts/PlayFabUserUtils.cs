@@ -82,6 +82,12 @@ public class PlayFabUserUtils : MonoBehaviour
             r => { }, OnError);
     }
 
+    public void Logout()
+    {
+        PlayFabClientAPI.ForgetAllCredentials();
+        MenuManager.Instance.OpenMenu("LoginScreen");
+    }
+
     public void OnError(PlayFabError e)
     {
         UpdateMsg(e.GenerateErrorReport().Split(": ")[1]);

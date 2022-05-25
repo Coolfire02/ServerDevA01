@@ -10,6 +10,8 @@ public class SkillBoxManager:MonoBehaviour
     [SerializeField]
     LobbyStats lobbyStats;
 
+    List<Skill> latestSkillListJSONFetch;
+
     private void Start()
     {
         SkillBoxes = new List<SkillBox>();
@@ -17,6 +19,11 @@ public class SkillBoxManager:MonoBehaviour
         {
             if (trans.gameObject.GetComponent<SkillBox>()) SkillBoxes.Add(trans.gameObject.GetComponent<SkillBox>());
         }
+    }
+
+    private void OnEnable()
+    {
+        LoadJSON();
     }
 
     public void SendJSON(){
@@ -39,6 +46,7 @@ public class SkillBoxManager:MonoBehaviour
         if(r.Data!=null&&r.Data.ContainsKey("Skills")){
             Debug.Log(r.Data["Skills"].Value);
             JSListWrapper<Skill> jlw=JsonUtility.FromJson<JSListWrapper<Skill>>(r.Data["Skills"].Value);
+            latestSkillListJSONFetch = jlw.list;
             for(int i = 0; i < jlw.list.Count; ++i)
             {
                 
@@ -49,13 +57,13 @@ public class SkillBoxManager:MonoBehaviour
                         sb.SetSkillStatsFromPrefab(jlw.list[i].level);
                     }
                 }
-                foreach(SkillBox sb in SkillBoxes)
-                {
-                    if(sb.GetLevel() == -1) // Not loaded
-                    {
-                        sb.SetSkillStatsFromPrefab(0);
-                    }
-                }
+            }
+        }
+        foreach (SkillBox sb in SkillBoxes)
+        {
+            if (sb.GetLevel() == -1) // Not loaded
+            {
+                sb.SetSkillStatsFromPrefab(0);
             }
         }
     }
@@ -65,6 +73,25 @@ public class SkillBoxManager:MonoBehaviour
     }
     public void BacktoMainScene(){
         UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScene");
+    }
+
+    public int getLatestJSONFetchSkillLevel(string skillname)
+    {
+        for(int i = 0; i< latestSkillListJSONFetch.Count; ++i)
+        {
+            if(latestSkillListJSONFetch[i].name == skillname)
+            {
+                int lvl = latestSkillListJSONFetch[i].level;
+                if (lvl < 0) lvl = 0;
+                return lvl;
+            }
+        }
+        return 0;
+    }
+
+    public LobbyStats getLobbyStatsReference()
+    {
+        return lobbyStats;
     }
 }
 

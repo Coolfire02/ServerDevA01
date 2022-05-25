@@ -36,6 +36,14 @@ public class LobbyStats : MonoBehaviour
     int apiCallbacks = -1;
     int maxApiCallbacks = 2;
 
+    bool activeInHierachyLastFrame = false;
+
+    private void OnEnable()
+    {
+        refreshStatistics();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
     //Predefined Updates
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -130,6 +138,7 @@ public class LobbyStats : MonoBehaviour
         coins = newCoins;
         if (coins < 0) coins = 0;
         enableLocalCache = true;
+        tx_coinsDisplay.text = coins + " Coins";
     }
     
     //If Set functions of cached values are used, local cache will be enabled
@@ -143,23 +152,36 @@ public class LobbyStats : MonoBehaviour
         if(enableLocalCache)
         {
             int coinsDifference = coins - playFabCoins;
-            PlayFabClientAPI.AddUserVirtualCurrency(new AddUserVirtualCurrencyRequest()
+            if(coinsDifference > 0)
             {
-                VirtualCurrency = "GD",
-                Amount = coinsDifference
-            },
-            r => {
-                enableLocalCache = false;
-                //Local cache flushed
-            },
-            playFabUtils.GetComponent<PlayFabUserUtils>().OnError);
+                PlayFabClientAPI.AddUserVirtualCurrency(new AddUserVirtualCurrencyRequest()
+                {
+                    VirtualCurrency = "GD",
+                    Amount = coinsDifference
+                },
+                r => {
+                    enableLocalCache = false;
+                                //Local cache flushed
+                            },
+                playFabUtils.GetComponent<PlayFabUserUtils>().OnError);
+            }else
+            {
+                int toSubtract = coinsDifference * -1;
+                PlayFabClientAPI.SubtractUserVirtualCurrency(new SubtractUserVirtualCurrencyRequest()
+                {
+                    VirtualCurrency = "GD",
+                    Amount = toSubtract
+                },
+                r => {
+                    enableLocalCache = false;
+                                    //Local cache flushed
+                                },
+                playFabUtils.GetComponent<PlayFabUserUtils>().OnError);
+            }
         }
     }
 
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
+
 
     private void OnDisable()
     {

@@ -19,7 +19,6 @@ public class SkillBox : MonoBehaviour
 {
     Skill skill;
     [SerializeField] string skillName;
-    int level = -1; //Means unloaded
 
     [SerializeField]TMP_Text tx_skillName;
     [SerializeField]TMP_Text tx_price;
@@ -32,15 +31,21 @@ public class SkillBox : MonoBehaviour
 
     public void BuyLevel()
     {
-        if(level >= 0)
+        if(skill.level >= 0)
         {
-
+            LobbyStats playerStats = gameObject.GetComponentInParent<SkillBoxManager>().getLobbyStatsReference();
+            if(playerStats.getCoins() > getSkillCost(skill.level + 1))
+            {
+                playerStats.setCoins(playerStats.getCoins() - getSkillCost(skill.level + 1));
+                skill.level += 1;
+                UpdateSkillBoxUI();
+            }
         }
     }
 
     public int GetLevel()
     {
-        return level;
+        return skill.level;
     }
 
     public int getSkillCost(int level)
@@ -62,9 +67,9 @@ public class SkillBox : MonoBehaviour
     public void UpdateSkillBoxUI()
     {
         print("Skillbox updated");
-        if(level >= 0)
+        if(skill.level >= 0)
         {
-            tx_price.text = "Cost: " + getSkillCost(level + 1).ToString() + " Coins";
+            tx_price.text = "Cost: " + getSkillCost(skill.level + 1).ToString() + " Coins";
             tx_skillName.text = skillName;
             tx_level.text = "Level " + skill.level;
         }else

@@ -17,9 +17,26 @@ public class Leaderboards : MonoBehaviour
     string currentLBName = "";
     bool lookingAtLocal = false;
 
+    string cachedLoggedInID;
+
     private void Start()
     {
         destroyExistingLeaderboard();
+    }
+
+    private void OnEnable()
+    {
+        PlayFabClientAPI.GetPlayerProfile(new GetPlayerProfileRequest(),
+            r =>
+            {
+
+                if (r.PlayerProfile != null)
+                {
+                    cachedLoggedInID = r.PlayerProfile.PlayerId;
+
+                }
+            },
+            OnError);
     }
 
     public void LookAtLocal(bool local)
@@ -102,6 +119,10 @@ public class Leaderboards : MonoBehaviour
             GameObject go = Instantiate(leaderboardItem, transform);
 
             string displayName = item.DisplayName;
+            if(item.PlayFabId == cachedLoggedInID)
+            {
+                go.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            }
            
             if (displayName == null || displayName.Length <= 0) displayName = "Guest" + item.PlayFabId;
             go.transform.Find("tx_posName").GetComponent<TMP_Text>().text = (item.Position+1) + ". " + displayName;

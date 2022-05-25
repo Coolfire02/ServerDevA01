@@ -20,10 +20,18 @@ public class LobbyStats : MonoBehaviour
     [SerializeField]
     GameObject playFabUtils;
 
+    //Always be updated to latest playfab
+    private int playFabCoins;
+    private int playFabXP;
+    private int playFabLvl;
+
     //Cached Attributes
     private int coins;
     private int playerXP;
     private int playerLvl;
+
+    bool completedFirstRefresh = false;
+    bool enableLocalCache = false;
 
     int apiCallbacks = -1;
     int maxApiCallbacks = 2;
@@ -39,8 +47,8 @@ public class LobbyStats : MonoBehaviour
         if (!PlayFabClientAPI.IsClientLoggedIn()) return;
         if(isPreviousRefreshCompleted() || apiCallbacks < 0)
         {
-            if (tx_coinsDisplay != null) tx_coinsDisplay.text = "Fetching statistic...";
-            if (tx_levelDisplay != null) tx_levelDisplay.text = "Fetching statistic...";
+            if (tx_coinsDisplay != null && tx_coinsDisplay.text.Length == 0) tx_coinsDisplay.text = "Fetching statistic...";
+            if (tx_levelDisplay != null && tx_levelDisplay.text.Length == 0) tx_levelDisplay.text = "Fetching statistic...";
 
             apiCallbacks = 0;
             int xp = 0;
@@ -49,14 +57,25 @@ public class LobbyStats : MonoBehaviour
                 r =>
                 {
                     apiCallbacks += 1;
+                    if (apiCallbacks == maxApiCallbacks)
+                    {
+                        completedFirstRefresh = true;
+                    }
+
+
                     if (r.Data != null)
                     {
                         if (r.Data.ContainsKey("XP")) xp = Convert.ToInt32(r.Data["XP"].Value);
                         if (r.Data.ContainsKey("Lvl")) lvl = Convert.ToInt32(r.Data["Lvl"].Value);
                     }
 
-                    playerXP = xp;
-                    playerLvl = lvl;
+                    if(!enableLocalCache)
+                    {
+                        playerXP = xp;
+                        playerLvl = lvl;
+                    }
+                    playFabXP = xp;
+                    playFabLvl = lvl;
 
                     if(tx_levelDisplay != null)
                         tx_levelDisplay.text = "Level " + lvl + ", " + xp + "/" + Leveling.getXPRequiredForLevel(lvl + 1) + " XP";
@@ -68,7 +87,16 @@ public class LobbyStats : MonoBehaviour
                 r =>
                 {
                     apiCallbacks += 1;
-                    coins = r.VirtualCurrency["GD"];
+                    if(apiCallbacks == maxApiCallbacks)
+                    {
+                        completedFirstRefresh = true;
+                    }
+
+                    if(!enableLocalCache)
+                    {
+                        coins = r.VirtualCurrency["GD"];
+                    }
+                    playFabCoins = coins;
 
                     if(tx_coinsDisplay != null)
                         tx_coinsDisplay.text = coins + " Coins";
@@ -84,29 +112,48 @@ public class LobbyStats : MonoBehaviour
 
     public int getXP()
     {
-        if(isPreviousRefreshCompleted())
-        {
-            return playerXP;
-        }
-        return int.MinValue;
+        return playerXP;
     }
 
     public int getLevel()
     {
-        if(isPreviousRefreshCompleted())
-        {
-            return playerLvl;
-        }
-        return int.MinValue;
+        return playerLvl;
     }
 
     public int getCoins()
     {
-        if(isPreviousRefreshCompleted())
+        return coins;
+    }
+
+    public void setCoins(int newCoins)
+    {
+        coins = newCoins;
+        if (coins < 0) coins = 0;
+        enableLocalCache = true;
+    }
+    
+    //If Set functions of cached values are used, local cache will be enabled
+    public bool hasLocalCachedValues()
+    {
+        return enableLocalCache;
+    }
+
+    public void sendLocalCacheToPlayfab()
+    {
+        if(enableLocalCache)
         {
-            return coins;
+            int coinsDifference = coins - playFabCoins;
+            PlayFabClientAPI.AddUserVirtualCurrency(new AddUserVirtualCurrencyRequest()
+            {
+                VirtualCurrency = "GD",
+                Amount = coinsDifference
+            },
+            r => {
+                enableLocalCache = false;
+                //Local cache flushed
+            },
+            playFabUtils.GetComponent<PlayFabUserUtils>().OnError);
         }
-        return int.MinValue;
     }
 
     private void OnEnable()

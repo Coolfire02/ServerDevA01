@@ -5,7 +5,20 @@ using PlayFab.ClientModels;
 
 public class SkillBoxManager:MonoBehaviour
 {
-    [SerializeField] SkillBox[] SkillBoxes;
+    List<SkillBox> SkillBoxes;
+
+    [SerializeField]
+    LobbyStats lobbyStats;
+
+    private void Start()
+    {
+        SkillBoxes = new List<SkillBox>();
+        foreach (Transform trans in gameObject.transform)
+        {
+            if (trans.gameObject.GetComponent<SkillBox>()) SkillBoxes.Add(trans.gameObject.GetComponent<SkillBox>());
+        }
+    }
+
     public void SendJSON(){
         List<Skill> skillList=new List<Skill>();
         foreach(var item in SkillBoxes) skillList.Add(item.ReturnClass());
@@ -26,8 +39,23 @@ public class SkillBoxManager:MonoBehaviour
         if(r.Data!=null&&r.Data.ContainsKey("Skills")){
             Debug.Log(r.Data["Skills"].Value);
             JSListWrapper<Skill> jlw=JsonUtility.FromJson<JSListWrapper<Skill>>(r.Data["Skills"].Value);
-            for(int i=0;i<SkillBoxes.Length;i++){
-                SkillBoxes[i].SetUI(jlw.list[i]);
+            for(int i = 0; i < jlw.list.Count; ++i)
+            {
+                
+                foreach(SkillBox sb in SkillBoxes)
+                {
+                    if(sb.getSkillName().Equals(jlw.list[i].name))
+                    {
+                        sb.SetSkillStatsFromPrefab(jlw.list[i].level);
+                    }
+                }
+                foreach(SkillBox sb in SkillBoxes)
+                {
+                    if(sb.GetLevel() == -1) // Not loaded
+                    {
+                        sb.SetSkillStatsFromPrefab(0);
+                    }
+                }
             }
         }
     }

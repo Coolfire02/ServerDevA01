@@ -75,6 +75,7 @@ public class PlayFabUserUtils : MonoBehaviour
                 {
                     StatisticName=lbName,
                     Value=value
+                    
                 }
             }
         };

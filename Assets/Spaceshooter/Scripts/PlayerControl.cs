@@ -20,22 +20,55 @@ public class PlayerControl : MonoBehaviour {
     public Transform shotSpawn2;
     public float fireRate;
 
+    GameController gameController;
+
     private float nextFire;
     private CharacterSelection characterSelection;
 
+    bool playerSkillsLoaded = false;
+
     private void Start() {
+
+        GameObject gameControllerObject = GameObject.FindWithTag("GameController");
+        if (gameControllerObject != null)
+        {
+            gameController = gameControllerObject.GetComponent<GameController>();
+        }
+        else
+        {
+            Debug.Log("GameController object not found");
+        }
+
         GameObject cSelectionObject = GameObject.FindWithTag("CharacterSelection");
         if (cSelectionObject != null) {
             characterSelection = cSelectionObject.GetComponent<CharacterSelection>();
         }
-
-
+        
         playerRb = GetComponent<Rigidbody>();
         playerWeapon = GetComponent<AudioSource>();
     }
 
     private void Update() {
-        if(Input.GetButton("Jump") && Time.time > nextFire){
+
+        
+        int rapidBulletsLvl = gameController.getSkillLevel("Rapid Bullets");
+        if(rapidBulletsLvl >= 0 && !playerSkillsLoaded)
+        {
+            playerSkillsLoaded = true;
+            if (rapidBulletsLvl > 0)
+            {
+                fireRate -= fireRate * 0.007f * rapidBulletsLvl;
+                if (fireRate < 0.05) fireRate = 0.05f;
+            }
+
+            int playerSpeed = gameController.getSkillLevel("Faster Movement");
+            if (playerSpeed > 0)
+            {
+                speed += speed * 0.03f * playerSpeed;
+            }
+        }
+
+        if (Input.GetButton("Jump") && Time.time > nextFire){
             nextFire = Time.time + fireRate;
             print(gameObject.name + "trying to shoot");
             if(characterSelection.getIndex() == 1){

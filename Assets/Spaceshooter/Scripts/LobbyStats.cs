@@ -24,11 +24,14 @@ public class LobbyStats : MonoBehaviour
     private int playFabCoins;
     private int playFabXP;
     private int playFabLvl;
+    private string playFabEquippedSkin;
 
     //Cached Attributes
     private int coins;
     private int playerXP;
     private int playerLvl;
+
+    string playerEquippedSkin;
 
     bool completedFirstRefresh = false;
     bool enableLocalCache = false;
@@ -61,6 +64,7 @@ public class LobbyStats : MonoBehaviour
             apiCallbacks = 0;
             int xp = 0;
             int lvl = 1;
+            string equippedSkin = null;
             PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
                 r =>
                 {
@@ -75,15 +79,20 @@ public class LobbyStats : MonoBehaviour
                     {
                         if (r.Data.ContainsKey("XP")) xp = Convert.ToInt32(r.Data["XP"].Value);
                         if (r.Data.ContainsKey("Lvl")) lvl = Convert.ToInt32(r.Data["Lvl"].Value);
+                        if (r.Data.ContainsKey("SkinEquipped")) equippedSkin = r.Data["SkinEquipped"].Value;
                     }
 
                     if(!enableLocalCache)
                     {
                         playerXP = xp;
                         playerLvl = lvl;
+                        playerEquippedSkin = equippedSkin;
+                        
                     }
+                    //These vars are always updated to the last fetch.
                     playFabXP = xp;
                     playFabLvl = lvl;
+                    playFabEquippedSkin = equippedSkin;
 
                     if(tx_levelDisplay != null)
                         tx_levelDisplay.text = "Level " + lvl + ", " + xp + "/" + Leveling.getXPRequiredForLevel(lvl + 1) + " XP";
@@ -133,6 +142,17 @@ public class LobbyStats : MonoBehaviour
         return coins;
     }
 
+    public string getSkinEquipped()
+    {
+        return playerEquippedSkin;
+    }
+
+    public void setEquippedSkin(string skin)
+    {
+        playerEquippedSkin = skin;
+        enableLocalCache = true;
+    }
+
     public void setCoins(int newCoins)
     {
         coins = newCoins;
@@ -151,7 +171,10 @@ public class LobbyStats : MonoBehaviour
     {
         if(enableLocalCache)
         {
+            //Set Coins
             int coinsDifference = coins - playFabCoins;
+            print("Caching reflecting coin diff of  " + coinsDifference);
+            playFabCoins = coins;
             if(coinsDifference > 0)
             {
                 PlayFabClientAPI.AddUserVirtualCurrency(new AddUserVirtualCurrencyRequest()
@@ -161,8 +184,8 @@ public class LobbyStats : MonoBehaviour
                 },
                 r => {
                     enableLocalCache = false;
-                                //Local cache flushed
-                            },
+                    //Local cache flushed
+                },
                 playFabUtils.GetComponent<PlayFabUserUtils>().OnError);
             }else
             {
@@ -171,6 +194,7 @@ public class LobbyStats : MonoBehaviour
                 {
                     VirtualCurrency = "GD",
                     Amount = toSubtract
+
                 },
                 r => {
                     enableLocalCache = false;
@@ -178,6 +202,16 @@ public class LobbyStats : MonoBehaviour
                                 },
                 playFabUtils.GetComponent<PlayFabUserUtils>().OnError);
             }
+
+            //Set Skin Data
+            Dictionary<string, string> newData = new Dictionary<string, string>();
+            newData.Add("SkinEquipped", playerEquippedSkin);
+            PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
+            {
+                Data = newData
+            }, r => { },
+            playFabUtils.GetComponent<PlayFabUserUtils>().OnError);
+
         }
     }
 

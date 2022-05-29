@@ -44,6 +44,15 @@ public class DestroyByContact : MonoBehaviour {
             {
                 gameObject.GetComponent<AudioSource>().Play();
                 Destroy(gameObject);
+                if(gameController.getSkillLevel("Double Coins") > 0)
+                {
+                    System.Random ran = new System.Random();
+                    if(ran.Next(0, 10 - gameController.getSkillLevel("Double Coins")) == 0)
+                    {
+                        gameController.addCoins(1);
+                        print("Bonus coin");
+                    }
+                }
                 gameController.addCoins(1);
             }
         }

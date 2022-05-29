@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4494998, g: 0.49649584, b: 0.55914414, a: 1}
+  m_IndirectSpecularColor: {r: 0.44950032, g: 0.49649626, b: 0.55914444, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -225,6 +225,7 @@ MonoBehaviour:
   mainMenuText: {fileID: 1851590482}
   coinsText: {fileID: 1486591473}
   playFabUtils: {fileID: 1082834108}
+  skillBoxManager: {fileID: 254539867}
 --- !u!4 &66382109
 Transform:
   m_ObjectHideFlags: 0

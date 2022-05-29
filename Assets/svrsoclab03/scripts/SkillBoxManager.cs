@@ -77,6 +77,7 @@ public class SkillBoxManager:MonoBehaviour
 
     public int getLatestJSONFetchSkillLevel(string skillname)
     {
+        if (latestSkillListJSONFetch == null) return -1;
         for(int i = 0; i< latestSkillListJSONFetch.Count; ++i)
         {
             if(latestSkillListJSONFetch[i].name == skillname)

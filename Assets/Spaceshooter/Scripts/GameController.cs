@@ -31,6 +31,9 @@ public class GameController : MonoBehaviour {
     [SerializeField]
     GameObject playFabUtils;
 
+    [SerializeField]
+    GameObject skillBoxManager;
+
     private void Start() {
         asteroids = new List<GameObject> {
             asteroid,
@@ -89,6 +92,11 @@ public class GameController : MonoBehaviour {
                 break;
             }
         }
+    }
+
+    public int getSkillLevel(string skillName)
+    {
+        return skillBoxManager.GetComponent<SkillBoxManager>().getLatestJSONFetchSkillLevel(skillName);
     }
 
     public void gameIsOver(){

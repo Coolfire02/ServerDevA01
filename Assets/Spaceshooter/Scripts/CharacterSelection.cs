@@ -21,6 +21,18 @@ public class CharacterSelection : MonoBehaviour {
         }
         if (characters[index]) {
             characters[index].SetActive(true);
+            string eqSkin = PlayerPrefs.GetString("EquippedSkin");
+            if(eqSkin != null)
+            {
+                if(LoadedTextures.instance.textureList.ContainsKey(eqSkin))
+                {
+                    Texture text = LoadedTextures.instance.textureList[eqSkin];
+                    characters[index].GetComponent<MeshRenderer>().materials[0].SetTexture("_MainTex", text);
+                    characters[index].GetComponent<MeshRenderer>().materials[1].SetTexture("_MainTex", text);
+                }
+            }
+            
+            
         }
     }
 

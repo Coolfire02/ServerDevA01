@@ -11,13 +11,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Spaceshooter/_Scenes/Main.unity
     guid: 0938f1be7c1804045bc2441b202785af
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LoginScene.unity
     guid: b23f270124ee57a4c91bbf25c2ccb398
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SkillScene.unity
     guid: ddcd730806fea314fa8c0fb036d8e9f1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/InventoryScene.unity
     guid: ab0a3dcfd622e30468a138f434b0e6bd
   m_configObjects: {}

@@ -4,6 +4,13 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 
+
+using PlayFab;
+using PlayFab.ClientModels;
+using PlayFab.CloudScriptModels;
+using PlayFab.AuthenticationModels;
+using PlayFab.PfEditor.Json;
+
 public class Player : MonoBehaviourPunCallbacks
 {
     private float moveSpeed = 7.0f;
@@ -23,10 +30,12 @@ public class Player : MonoBehaviourPunCallbacks
     private GameObject leaderPanel;
     private GameObject eButton;
 
+    bool initialLoad = false;
     string PlayfabID;
     string PlayfabDisplayName;
 
     [SerializeField] TMP_Text tx_username;
+    [SerializeField] TMP_Text tx_coinsDisplay;
 
     enum CONTACT_TYPE
     {
@@ -62,13 +71,44 @@ public class Player : MonoBehaviourPunCallbacks
 
         canMove = true;
 
-        if(photonView.IsMine)
-        {
-            tx_username.text = PlayfabCache.Instance.DisplayName;
-        }else
-        {
-            tx_username.text = "Loading...";
-        }
+       
+        tx_username.text = photonView.Owner.NickName;
+
+
+
+        PlayFabClientAPI.ExecuteCloudScript(
+            new ExecuteCloudScriptRequest
+            {
+
+                FunctionName="getGoldCoins",
+                FunctionParameter = new
+                {
+                    PlayFabId = photonView.Owner.UserId
+                }
+            },
+            r => {
+                
+                foreach(PlayFab.ClientModels.LogStatement ls in r.Logs)
+                {
+                    Debug.Log(ls.Message);
+                }
+
+                Debug.Log(JsonWrapper.SerializeObject(r.FunctionResult));
+                JsonObject jsonResult = (JsonObject)r.FunctionResult;
+                object messageValue;
+                jsonResult.TryGetValue("goldCoins", out messageValue); // note how "messageValue" directly corresponds to the JSON values set in CloudScript (Legacy)
+                Debug.Log((string)messageValue);
+            },
+            e => {
+                Debug.Log(e.ErrorMessage);
+            }
+            );
+
+    }
+
+    public bool isPlayerLoaded()
+    {
+        return initialLoad;
     }
 
     public void InitPlayfabDetailsOfController(string playfabid, string playfabname)
@@ -76,9 +116,17 @@ public class Player : MonoBehaviourPunCallbacks
         this.PlayfabID = playfabid;
         this.PlayfabDisplayName = playfabname;
 
+        initialLoad = true;
+
         print("Updating username of just joined player to " + this.PlayfabDisplayName);
 
-        tx_username.text = this.PlayfabDisplayName;
+        ApplyLoadedNameOntoUI();
+    }
+
+    public void ApplyLoadedNameOntoUI()
+    {
+        if(initialLoad)
+            tx_username.text = this.PlayfabDisplayName;
     }
 
     

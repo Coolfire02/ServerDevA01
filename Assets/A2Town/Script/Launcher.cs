@@ -13,6 +13,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
+        PhotonNetwork.AuthValues = new AuthenticationValues(PlayfabCache.Instance.PlayfabID);
+        PhotonNetwork.LocalPlayer.NickName = PlayfabCache.Instance.DisplayName;
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -28,13 +30,13 @@ public class Launcher : MonoBehaviourPunCallbacks
         GameObject go = PhotonNetwork.Instantiate(PlayerPrefab.name, new Vector3(0, -2.9f, 0), Quaternion.identity);
 
 
-        object[] obj = new object[3];
-        obj[0] = go.GetComponent<PhotonView>().ViewID;
-        obj[1] = PlayfabCache.Instance.PlayfabID;
-        obj[2] = PlayfabCache.Instance.DisplayName;
+        //object[] obj = new object[3];
+        //obj[0] = go.GetComponent<PhotonView>().ViewID;
+        //obj[1] = PlayfabCache.Instance.PlayfabID;
+        //obj[2] = PlayfabCache.Instance.DisplayName;
 
-        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-        PhotonNetwork.RaiseEvent(RaiseEvents.LOADPLAYER, obj, raiseEventOptions, SendOptions.SendReliable);
+        //RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+        //PhotonNetwork.RaiseEvent(RaiseEvents.LOADPLAYER, obj, raiseEventOptions, SendOptions.SendReliable);
         
     }
 

@@ -66,6 +66,20 @@ public class TownyManager : MonoBehaviour
 
         Player player = PhotonNetwork.GetPhotonView(pviewID).gameObject.GetComponent<Player>();
         player.InitPlayfabDetailsOfController(playfabID, playerNick);
+
+        if(PhotonNetwork.GetPhotonView(pviewID).IsMine)
+        {
+            //Find all players that already existed in photon space, and apply their names onto UI;
+            Player[] players = GameObject.FindObjectsOfType<Player>();
+            foreach(Player p in players)
+            {
+                if(!p.GetComponent<PhotonView>().IsMine)
+                {
+                    p.GetComponent<Player>().ApplyLoadedNameOntoUI();
+                    print("applying loaded name of old player");
+                }
+            }
+        }
     }
 
     private void Update()

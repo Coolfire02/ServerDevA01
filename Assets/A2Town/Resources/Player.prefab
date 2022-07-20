@@ -371,7 +371,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Coolfire02
+  m_text: Unset
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8d54fd17ceee48c4b80188e1dda78b2f, type: 2}
   m_sharedMaterial: {fileID: -6259932080855526866, guid: 8d54fd17ceee48c4b80188e1dda78b2f, type: 2}
@@ -598,6 +598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tx_username: {fileID: 7190182767473557706}
+  tx_coinsDisplay: {fileID: 3867824503258219830}
 --- !u!95 &8875753840370992055
 Animator:
   serializedVersion: 4

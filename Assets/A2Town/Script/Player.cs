@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using TMPro;
 
 public class Player : MonoBehaviourPunCallbacks
 {
     private float moveSpeed = 7.0f;
     private bool canMove = true;
+
+    private PhotonView photonView;
 
     private Rigidbody2D rigidbody;
     private BoxCollider2D boxCollider;
@@ -19,6 +22,11 @@ public class Player : MonoBehaviourPunCallbacks
     private GameObject friendsPanel;
     private GameObject leaderPanel;
     private GameObject eButton;
+
+    string PlayfabID;
+    string PlayfabDisplayName;
+
+    [SerializeField] TMP_Text tx_username;
 
     enum CONTACT_TYPE
     {
@@ -39,15 +47,45 @@ public class Player : MonoBehaviourPunCallbacks
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
 
+        photonView = GetComponent<PhotonView>();
+
         guildPanel = GameObject.FindGameObjectWithTag("Guild"); 
         shopPanel = GameObject.FindGameObjectWithTag("Shop");
         friendsPanel = GameObject.FindGameObjectWithTag("Friends");
         leaderPanel = GameObject.FindGameObjectWithTag("Leaderboard");
 
-        eButton = GameObject.Find("EButton");
+        if (photonView.IsMine)
+        {
+            eButton = GameObject.Find("EButton");
+            eButton.SetActive(false);
+        }
 
         canMove = true;
-        eButton.SetActive(false);
+
+        if(photonView.IsMine)
+        {
+            tx_username.text = PlayfabCache.Instance.DisplayName;
+        }else
+        {
+            tx_username.text = "Loading...";
+        }
+    }
+
+    public void InitPlayfabDetailsOfController(string playfabid, string playfabname)
+    {
+        this.PlayfabID = playfabid;
+        this.PlayfabDisplayName = playfabname;
+
+        print("Updating username of just joined player to " + this.PlayfabDisplayName);
+
+        tx_username.text = this.PlayfabDisplayName;
+    }
+
+    
+
+    public PhotonView GetPhotonView()
+    {
+        return photonView;
     }
 
     // Update is called once per frame

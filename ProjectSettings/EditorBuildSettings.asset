@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Spaceshooter/_Scenes/Menu.unity
     guid: 51d5079a8903f4f37a90174bf793ca06
   - enabled: 0
@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/InventoryScene.unity
     guid: ab0a3dcfd622e30468a138f434b0e6bd
+  - enabled: 1
+    path: Assets/A2Town/Scenes/LoginScreen.unity
+    guid: 1b0a76f8b86a76548a9b18e4fc4cc127
   - enabled: 1
     path: Assets/A2Town/Scenes/Game.unity
     guid: 325de30d16b8f924988710d52ef60856

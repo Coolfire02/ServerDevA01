@@ -13,7 +13,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        PhotonNetwork.AuthValues = new AuthenticationValues(PlayfabCache.Instance.PlayfabID);
+        AuthenticationValues authValues = new AuthenticationValues();
+        authValues.UserId = PlayfabCache.Instance.PlayfabID;
+        print("Setting authid to " + PlayfabCache.Instance.PlayfabID);
+        PhotonNetwork.AuthValues = authValues;
         PhotonNetwork.LocalPlayer.NickName = PlayfabCache.Instance.DisplayName;
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -21,7 +24,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected");
-        PhotonNetwork.JoinRandomOrCreateRoom();
+
+        RoomOptions options = new RoomOptions();
+        options.PublishUserId = true; //IMPORTANT!! To allow access to userIDs from view.Owner.UserID
+
+        PhotonNetwork.JoinRandomOrCreateRoom(null, 0, MatchmakingMode.FillRoom, null, null, null, options);
     }
 
     public override void OnJoinedRoom()

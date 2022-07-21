@@ -7,9 +7,8 @@ using TMPro;
 
 using PlayFab;
 using PlayFab.ClientModels;
-using PlayFab.CloudScriptModels;
-using PlayFab.AuthenticationModels;
-using PlayFab.PfEditor.Json;
+using PlayFab.Json;
+using System;
 
 public class Player : MonoBehaviourPunCallbacks
 {
@@ -76,6 +75,7 @@ public class Player : MonoBehaviourPunCallbacks
 
 
 
+        print("Polling playfab id bal: " + photonView.Owner.UserId);
         PlayFabClientAPI.ExecuteCloudScript(
             new ExecuteCloudScriptRequest
             {
@@ -83,32 +83,42 @@ public class Player : MonoBehaviourPunCallbacks
                 FunctionName="getGoldCoins",
                 FunctionParameter = new
                 {
-                    PlayFabId = photonView.Owner.UserId
+                    id = photonView.Owner.UserId
                 }
+                
             },
             r => {
                 
                 foreach(PlayFab.ClientModels.LogStatement ls in r.Logs)
                 {
-                    Debug.Log(ls.Message);
+                    Debug.Log(ls.Level + " " + ls.Message);
                 }
 
-                Debug.Log(JsonWrapper.SerializeObject(r.FunctionResult));
+                Debug.Log(PlayFab.PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer).SerializeObject(r.FunctionResult));
                 JsonObject jsonResult = (JsonObject)r.FunctionResult;
                 object messageValue;
                 jsonResult.TryGetValue("goldCoins", out messageValue); // note how "messageValue" directly corresponds to the JSON values set in CloudScript (Legacy)
-                Debug.Log((string)messageValue);
+                int goldCoins = Convert.ToInt32(messageValue);
+                tx_coinsDisplay.text = goldCoins + " Coins";
+                Debug.Log(messageValue.GetType().Name + " " + goldCoins);
             },
             e => {
-                Debug.Log(e.ErrorMessage);
+                Debug.Log(e.GenerateErrorReport());
             }
             );
-
     }
 
     public bool isPlayerLoaded()
     {
         return initialLoad;
+    }
+
+    public void UpdateCoinBalanceDisplay(int newValue)
+    {
+        if(newValue >= 0)
+        {
+            tx_coinsDisplay.text = newValue + " Coins";
+        }
     }
 
     public void InitPlayfabDetailsOfController(string playfabid, string playfabname)

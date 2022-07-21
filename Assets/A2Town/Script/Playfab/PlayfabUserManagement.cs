@@ -88,7 +88,7 @@ public class PlayfabUserManagement : MonoBehaviour
             else
             {
                 PlayfabCache.Instance.DisplayName = "Guest " + SystemInfo.deviceUniqueIdentifier;
-                PlayfabCache.Instance.PlayfabID = SystemInfo.deviceUniqueIdentifier;
+                PlayfabCache.Instance.PlayfabID = r.PlayerProfile.PlayerId;
             }
             SceneManager.LoadScene("Game");
             MenuManager.Instance.GetBlackScreenObject().GetComponent<AlphaFading>().StopAllCoroutines();

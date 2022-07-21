@@ -26,7 +26,7 @@ public class TownyManager : MonoBehaviour
     float sceneElapsed;
 
     float nextCoinDrop;
-    float coinDropCooldown = 5.0f;
+    float coinDropCooldown = 2.0f;
 
     public void Start()
     {
@@ -35,24 +35,22 @@ public class TownyManager : MonoBehaviour
         nextCoinDrop = coinDropCooldown;
     }
 
-    //public void OnEnable()
-    //{
-    //    RaiseEvents.SpawnCoinEvent += CoinSpawn;
-    //}
-
-    //public void OnDisable()
-    //{
-    //    RaiseEvents.SpawnCoinEvent -= CoinSpawn;
-    //}
-
-    private void OnEnable()
+    public void OnEnable()
     {
-        RaiseEvents.LoadPlayerEvent += onPlayerLoad;
+        RaiseEvents.PlayerBalanceUpdateEvent += PlayerBalanceUpdate;
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
-        RaiseEvents.LoadPlayerEvent -= onPlayerLoad;
+        RaiseEvents.PlayerBalanceUpdateEvent -= PlayerBalanceUpdate;
+    }
+
+    public void PlayerBalanceUpdate(object[] objs)
+    {
+        int pviewID = (int)objs[0];
+        int newBal = (int)objs[1];
+
+        PhotonNetwork.GetPhotonView(pviewID).GetComponent<Player>().UpdateCoinBalanceDisplay(newBal);
     }
 
     public void onPlayerLoad(object[] objs)

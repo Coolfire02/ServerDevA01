@@ -8,6 +8,11 @@ public class Menu : MonoBehaviour
     public bool open;
     public Menu[] parents;
 
+    public bool isOpened()
+    {
+        return open;
+    }
+
     public void Open()
     {
         open = true;

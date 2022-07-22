@@ -78,9 +78,9 @@ public class PlayfabUserManagement : MonoBehaviour
     {
         PlayFabClientAPI.GetPlayerProfile(new GetPlayerProfileRequest()
         {
-            
+
         }, r => {
-            if(r.PlayerProfile != null && r.PlayerProfile.DisplayName != null && r.PlayerProfile.DisplayName.Length > 0)
+            if (r.PlayerProfile != null && r.PlayerProfile.DisplayName != null && r.PlayerProfile.DisplayName.Length > 0)
             {
                 PlayfabCache.Instance.DisplayName = r.PlayerProfile.DisplayName;
                 PlayfabCache.Instance.PlayfabID = r.PlayerProfile.PlayerId;
@@ -95,6 +95,19 @@ public class PlayfabUserManagement : MonoBehaviour
             MenuManager.Instance.GetBlackScreenObject().GetComponent<AlphaFading>().FadeOut(0.7f);
         },
 OnError);
+
+        PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
+        {
+            IncludeFacebookFriends = false,
+            IncludeSteamFriends = false,
+            XboxToken = null
+        }, frReqResult =>
+        {
+
+            PlayfabCache.Instance.friends = frReqResult.Friends;
+
+
+        }, e => { });
     }
 
 

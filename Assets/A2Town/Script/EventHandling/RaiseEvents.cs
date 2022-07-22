@@ -11,6 +11,7 @@ public class RaiseEvents : MonoBehaviour, IOnEventCallback
     public const byte SPAWNCOIN = 1;
     public const byte PLAYERBALANCEUPDATE = 2; 
     public const byte LOADPLAYER = 3;
+    public const byte FRIENDSUPDATE = 4;
 
     public delegate void OnSpawnCoin(object[] objs); //SpawnCoinPos(VecToString)
     public static event OnSpawnCoin SpawnCoinEvent;
@@ -21,6 +22,8 @@ public class RaiseEvents : MonoBehaviour, IOnEventCallback
     public delegate void OnLoadPlayer(object[] objs); //PViewID(int), PlayerPlayfabID(string), PlayerNick(string)
     public static event OnLoadPlayer LoadPlayerEvent;
 
+    public delegate void OnFriendsUpdate(object[] objs); //ReceiverPfabid(string) , CallerPfabid(string), areFriends(bool)
+    public static event OnFriendsUpdate FriendsUpdateEvent;
 
     //Raise Event uses Unity OnEnable and OnDisable too to include the event in the system
     private void OnEnable()
@@ -49,6 +52,10 @@ public class RaiseEvents : MonoBehaviour, IOnEventCallback
         else if (eventCode == LOADPLAYER)
         {
             LoadPlayerEvent?.Invoke((object[])photonEvent.CustomData);
+        }
+        else if (eventCode == FRIENDSUPDATE)
+        {
+            FriendsUpdateEvent?.Invoke((object[])photonEvent.CustomData);
         }
     }
 }

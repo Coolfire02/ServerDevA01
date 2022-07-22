@@ -47,6 +47,38 @@ public class Player : MonoBehaviourPunCallbacks
 
     private CONTACT_TYPE contactType;
 
+    private void OnEnable()
+    {
+        RaiseEvents.FriendsUpdateEvent += FriendsUpdate;
+    }
+
+    private void OnDisable()
+    {
+        RaiseEvents.FriendsUpdateEvent -= FriendsUpdate;
+    }
+
+    public void FriendsUpdate(object[] objs)
+    {
+        string receiverPFabID = (string)objs[0];
+        string senderPFabID = (string)objs[1];
+        
+        if(PhotonNetwork.LocalPlayer.UserId == receiverPFabID || PhotonNetwork.LocalPlayer.UserId == senderPFabID)
+        {
+            if(photonView.Owner.UserId != PhotonNetwork.LocalPlayer.UserId)
+            {
+                bool isFriend = (bool)objs[2];
+                if(isFriend)
+                {
+                    tx_username.color = Color.green;
+                }
+                else
+                {
+                    tx_username.color = Color.white;
+                }
+            }
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -73,7 +105,16 @@ public class Player : MonoBehaviourPunCallbacks
        
         tx_username.text = photonView.Owner.NickName;
 
-
+        if(PhotonNetwork.LocalPlayer.UserId != photonView.Owner.UserId)
+        {
+            foreach(FriendInfo fi in PlayfabCache.Instance.friends)
+            {
+                if(fi.FriendPlayFabId == photonView.Owner.UserId)
+                {
+                    tx_username.color = Color.green;
+                }
+            }
+        }
 
         print("Polling playfab id bal: " + photonView.Owner.UserId);
         PlayFabClientAPI.ExecuteCloudScript(
@@ -162,35 +203,50 @@ public class Player : MonoBehaviourPunCallbacks
                     switch (contactType)
                     {
                         case CONTACT_TYPE.SHOP:
-                            shopPanel.GetComponent<ShopController>().OpenPanel(ClosePanel);
-                            canMove = false;
-                            rigidbody.velocity = Vector3.zero;
-                            animator.enabled = false;
-                            eButton.SetActive(false);
+                            if(!MenuManager.Instance.getMenu("ShopUI").GetComponent<Menu>().isOpened())
+                            {
+                                MenuManager.Instance.OpenMenu("ShopUI");
+                                eButton.SetActive(false);
+                            }else
+                            {
+                                MenuManager.Instance.CloseMenu("ShopUI");
+                            }
                             break;
 
                         case CONTACT_TYPE.FRIEND:
-                            friendsPanel.GetComponent<FriendsController>().OpenPanel(ClosePanel);
-                            canMove = false;
-                            rigidbody.velocity = Vector3.zero;
-                            animator.enabled = false;
-                            eButton.SetActive(false);
+                            if (!MenuManager.Instance.getMenu("FriendsUI").GetComponent<Menu>().isOpened())
+                            {
+                                MenuManager.Instance.OpenMenu("FriendsUI");
+                                eButton.SetActive(false);
+                            }
+                            else
+                            {
+                                MenuManager.Instance.CloseMenu("FriendsUI");
+                            }
                             break;
 
                         case CONTACT_TYPE.LEADERBOARD:
-                            leaderPanel.GetComponent<LeaderboardController>().OpenPanel(ClosePanel);
-                            canMove = false;
-                            rigidbody.velocity = Vector3.zero;
-                            animator.enabled = false;
-                            eButton.SetActive(false);
+                            if (!MenuManager.Instance.getMenu("LeaderboardUI").GetComponent<Menu>().isOpened())
+                            {
+                                MenuManager.Instance.OpenMenu("LeaderboardUI");
+                                eButton.SetActive(false);
+                            }
+                            else
+                            {
+                                MenuManager.Instance.CloseMenu("LeaderboardUI");
+                            }
                             break;
 
                         case CONTACT_TYPE.GUILD:
-                            guildPanel.GetComponent<GuildController>().OpenPanel(ClosePanel);
-                            canMove = false;
-                            rigidbody.velocity = Vector3.zero;
-                            animator.enabled = false;
-                            eButton.SetActive(false); 
+                            if (!MenuManager.Instance.getMenu("GuildUI").GetComponent<Menu>().isOpened())
+                            {
+                                MenuManager.Instance.OpenMenu("GuildUI");
+                                eButton.SetActive(false);
+                            }
+                            else
+                            {
+                                MenuManager.Instance.CloseMenu("GuildUI");
+                            }
                             break;
                     }
                 }
@@ -252,20 +308,22 @@ public class Player : MonoBehaviourPunCallbacks
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (photonView.IsMine)
+        if (photonView.IsMine && (
+            collision.gameObject.CompareTag("Guild") ||
+            collision.gameObject.CompareTag("Shop") ||
+            collision.gameObject.CompareTag("Friends") ||
+            collision.gameObject.CompareTag("Leaderboard") 
+            ))
         {
             contactType = CONTACT_TYPE.NIL;
-            eButton.SetActive(false);
+            eButton.SetActive(true);
+
+            MenuManager.Instance.CloseMenu("GuildUI");
+            MenuManager.Instance.CloseMenu("ShopUI");
+            MenuManager.Instance.CloseMenu("LeaderboardUI");
+            MenuManager.Instance.CloseMenu("FriendsUI");
+
         }
     }
 
-    public void ClosePanel()
-    {
-        if (photonView.IsMine)
-        {
-            canMove = true;
-            animator.enabled = true;
-            eButton.SetActive(true);
-        }
-    }
 }

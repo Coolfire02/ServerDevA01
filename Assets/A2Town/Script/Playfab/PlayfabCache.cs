@@ -1,3 +1,4 @@
+using PlayFab.ClientModels;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,4 +21,5 @@ public class PlayfabCache : MonoBehaviour
 
     public string DisplayName;
     public string PlayfabID;
+    public List<FriendInfo> friends;
 }
